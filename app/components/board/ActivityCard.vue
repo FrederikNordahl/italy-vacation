@@ -8,6 +8,7 @@ const props = defineProps<{
 const { categoryLabel, categoryColor } = useDa()
 const { identity, requireIdentity } = useIdentity()
 const { vote } = useActivities()
+const { open: openActivity } = useActivityModal()
 
 const voting = ref(false)
 const imageError = ref(false)
@@ -37,9 +38,10 @@ async function castVote(value: 1 | -1) {
   <div
     class="group flex items-stretch gap-2 sm:gap-3 rounded-xl border border-default bg-elevated/40 p-2.5 sm:p-3 shadow-sm hover:shadow-md hover:border-primary/25 transition-all"
   >
-    <NuxtLink
-      :to="`/activity/${activity.id}`"
-      class="flex items-center gap-3 min-w-0 flex-1"
+    <button
+      type="button"
+      class="flex items-center gap-3 min-w-0 flex-1 text-left cursor-pointer"
+      @click="openActivity(activity.id)"
     >
       <div class="shrink-0 size-16 sm:size-[4.5rem] rounded-xl overflow-hidden bg-muted ring-1 ring-default">
         <img
@@ -93,7 +95,7 @@ async function castVote(value: 1 | -1) {
           </span>
         </div>
       </div>
-    </NuxtLink>
+    </button>
 
     <div
       class="vote-controls flex flex-col items-center justify-center gap-1 shrink-0 pl-1 sm:pl-2 border-l border-default/80"

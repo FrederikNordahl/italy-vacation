@@ -63,5 +63,6 @@ onMounted(() => {
     </footer>
 
     <IdentityPicker />
+    <ActivityDetailModal />
   </div>
 </template>

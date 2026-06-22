@@ -6,6 +6,7 @@ import { da } from '#shared/i18n/da'
 
 const { isAdmin } = useIdentity()
 const { byDay, batchUpdate } = useActivities()
+const { open: openActivity } = useActivityModal()
 
 const selectedActivityId = ref<string | null>(null)
 
@@ -56,8 +57,9 @@ async function assignSelectedToDay(date: string) {
 function onActivityClick(activity: ActivityListItem, event: MouseEvent) {
   if (isAdmin.value && event.shiftKey) {
     selectedActivityId.value = activity.id
-    event.preventDefault()
+    return
   }
+  openActivity(activity.id)
 }
 </script>
 
@@ -102,16 +104,16 @@ function onActivityClick(activity: ActivityListItem, event: MouseEvent) {
         </div>
 
         <div class="flex flex-col gap-1">
-          <NuxtLink
+          <button
             v-for="activity in day.activities"
             :key="activity.id"
-            :to="`/activity/${activity.id}`"
-            class="text-xs px-1.5 py-1 rounded bg-elevated border border-default truncate hover:bg-primary/10 transition-colors"
+            type="button"
+            class="text-xs px-1.5 py-1 rounded bg-elevated border border-default truncate hover:bg-primary/10 transition-colors text-left w-full"
             :class="{ 'ring-2 ring-primary': selectedActivityId === activity.id }"
             @click="onActivityClick(activity, $event)"
           >
             {{ activity.title }}
-          </NuxtLink>
+          </button>
         </div>
       </div>
     </div>

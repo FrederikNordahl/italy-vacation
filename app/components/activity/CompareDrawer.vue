@@ -14,6 +14,8 @@ const selectedActivities = computed(() =>
   props.activities.filter(a => selectedIds.value.includes(a.id))
 )
 
+const { open: openActivity } = useActivityModal()
+
 function toggle(id: string) {
   const idx = selectedIds.value.indexOf(id)
   if (idx >= 0) {
@@ -77,9 +79,13 @@ watch(open, (val) => {
                 :key="activity.id"
                 class="text-left p-2 font-medium min-w-32"
               >
-                <NuxtLink :to="`/activity/${activity.id}`" class="text-primary hover:underline">
+                <button
+                  type="button"
+                  class="text-primary hover:underline text-left"
+                  @click="openActivity(activity.id)"
+                >
                   {{ activity.title }}
-                </NuxtLink>
+                </button>
               </th>
             </tr>
           </thead>

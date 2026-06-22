@@ -2,44 +2,43 @@
 import type { ActivityDto } from '#shared/types/activity'
 import { da } from '#shared/i18n/da'
 
-const props = defineProps<{
-  activity?: ActivityDto | null
-  loading?: boolean
-}>()
+const { activityId, isOpen, close } = useActivityModal()
+const { fetchActivities } = useActivities()
 
-const emit = defineEmits<{
-  close: []
-  updated: []
-  deleted: []
-}>()
+const activity = ref<ActivityDto | null>(null)
+const loading = ref(false)
 
-const open = ref(true)
-const isLocked = import.meta.client ? useScrollLock(document.body) : ref(false)
-
-watch(open, (val) => {
-  if (!val) {
-    isLocked.value = false
-    closeModal()
+async function loadActivity(id: string) {
+  loading.value = true
+  try {
+    activity.value = await $fetch<ActivityDto>(`/api/activities/${id}`)
+  } catch {
+    activity.value = null
+  } finally {
+    loading.value = false
   }
-})
+}
 
-onMounted(() => {
-  isLocked.value = true
-})
-
-onUnmounted(() => {
-  isLocked.value = false
-})
-
-const router = useRouter()
-
-function closeModal() {
-  if (window.history.length > 1) {
-    router.back()
+watch(activityId, (id) => {
+  if (id) {
+    loadActivity(id)
   } else {
-    navigateTo('/')
+    activity.value = null
+    loading.value = false
   }
-  emit('close')
+}, { immediate: true })
+
+const open = computed({
+  get: () => isOpen.value,
+  set: (value: boolean) => {
+    if (!value) close()
+  }
+})
+
+async function onUpdated() {
+  if (activityId.value) {
+    await Promise.all([loadActivity(activityId.value), fetchActivities()])
+  }
 }
 </script>
 
@@ -60,15 +59,15 @@ function closeModal() {
       <ActivityDetailContent
         v-else-if="activity"
         :activity="activity"
-        @updated="emit('updated')"
-        @deleted="closeModal"
+        @updated="onUpdated"
+        @deleted="close"
       />
 
       <div v-else class="text-center py-12">
         <p class="text-muted mb-4">
           {{ da.activityNotFound }}
         </p>
-        <UButton :label="da.backToBoard" to="/" />
+        <UButton :label="da.backToBoard" @click="close" />
       </div>
     </template>
   </UModal>
