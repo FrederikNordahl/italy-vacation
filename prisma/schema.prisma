@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserIdentityName {
+  Frederik
+  Soren
+  Marie
+  Peter
+  Anna
+  Lars
+  Emma
+  Jonas
+}
+
+enum ActivityCategory {
+  Culture
+  Food
+  Wine
+  Nature
+  History
+  Shopping
+  Adventure
+  Relaxation
+  Event
+}
+
+enum ActivityStatus {
+  Idea
+  Planned
+  Booked
+  Completed
+}
+
+model UserIdentity {
+  id   String           @id @default(cuid())
+  name UserIdentityName @unique
+}
+
+model Activity {
+  id                       String           @id @default(cuid())
+  title                    String
+  description              String?          @db.Text
+  notes                    String?          @db.Text
+  category                 ActivityCategory
+  status                   ActivityStatus   @default(Idea)
+  driveTimeMinutes         Int?
+  distanceKm               Float?
+  estimatedDurationHours   Float?
+  address                  String?
+  latitude                 Float?
+  longitude                Float?
+  scheduledDate            DateTime?        @db.Date
+  sortOrder                Int              @default(0)
+  aiSummary                String?          @db.Text
+  aiDescription            String?          @db.Text
+  aiTips                   String?          @db.Text
+  aiHighlights             String?          @db.Text
+  createdAt                DateTime         @default(now())
+  updatedAt                DateTime         @updatedAt
+  images                   ActivityImage[]
+  links                    ActivityLink[]
+  votes                    Vote[]
+  comments                 Comment[]
+}
+
+model ActivityImage {
+  id         String   @id @default(cuid())
+  activityId String
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  url        String
+  isCover    Boolean  @default(false)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+}
+
+model ActivityLink {
+  id         String   @id @default(cuid())
+  activityId String
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  title      String
+  url        String
+  sortOrder  Int      @default(0)
+}
+
+model Vote {
+  id         String           @id @default(cuid())
+  activityId String
+  activity   Activity         @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  userName   UserIdentityName
+  value      Int
+  createdAt  DateTime         @default(now())
+
+  @@unique([activityId, userName])
+}
+
+model Comment {
+  id         String           @id @default(cuid())
+  activityId String
+  activity   Activity         @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  userName   UserIdentityName
+  message    String           @db.Text
+  createdAt  DateTime         @default(now())
+}

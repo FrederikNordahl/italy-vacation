@@ -1,0 +1,48 @@
+{
+  "name": "italien",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "preview": "nuxt preview",
+    "postinstall": "prisma generate && nuxt prepare",
+    "lint": "eslint .",
+    "typecheck": "nuxt typecheck",
+    "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:studio": "prisma studio"
+  },
+  "dependencies": {
+    "@iconify-json/lucide": "^1.2.112",
+    "@iconify-json/simple-icons": "^1.2.86",
+    "@nuxt/ui": "^4.8.2",
+    "@prisma/adapter-pg": "^6.19.0",
+    "@prisma/client": "^6.19.0",
+    "@vercel/blob": "^1.1.1",
+    "@vueuse/core": "^13.9.0",
+    "@vueuse/nuxt": "^13.9.0",
+    "date-fns": "^4.1.0",
+    "markdown-it": "^14.1.0",
+    "nuxt": "^4.4.8",
+    "pg": "^8.16.3",
+    "tailwindcss": "^4.3.1",
+    "vue-draggable-plus": "^0.6.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@nuxt/eslint": "^1.16.0",
+    "@types/markdown-it": "^14.1.2",
+    "@types/pg": "^8.15.5",
+    "eslint": "^10.5.0",
+    "prisma": "^6.19.0",
+    "tsx": "^4.20.5",
+    "typescript": "^6.0.3",
+    "vue-tsc": "^3.3.5"
+  },
+  "packageManager": "pnpm@11.6.0",
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  }
+}

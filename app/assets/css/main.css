@@ -1,0 +1,72 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme static {
+  --font-sans: 'Public Sans', sans-serif;
+
+  --color-terracotta-50: #fdf5f0;
+  --color-terracotta-100: #fae8dc;
+  --color-terracotta-200: #f4cdb8;
+  --color-terracotta-300: #ecab8a;
+  --color-terracotta-400: #e07d52;
+  --color-terracotta-500: #c45c32;
+  --color-terracotta-600: #a84828;
+  --color-terracotta-700: #8a3a22;
+  --color-terracotta-800: #6f3120;
+  --color-terracotta-900: #5c2b1e;
+  --color-terracotta-950: #31140c;
+
+  --color-olive-50: #f6f7f2;
+  --color-olive-100: #e9ecdf;
+  --color-olive-200: #d4dac0;
+  --color-olive-300: #b5c099;
+  --color-olive-400: #96a574;
+  --color-olive-500: #788a57;
+  --color-olive-600: #5d6d43;
+  --color-olive-700: #4a5637;
+  --color-olive-800: #3d4630;
+  --color-olive-900: #353d2b;
+  --color-olive-950: #1b2015;
+
+  --shadow-card: 0 4px 24px -4px rgb(0 0 0 / 0.08), 0 2px 8px -2px rgb(0 0 0 / 0.04);
+  --shadow-card-hover: 0 8px 32px -4px rgb(0 0 0 / 0.12), 0 4px 12px -2px rgb(0 0 0 / 0.06);
+}
+
+.glass-card {
+  background: color-mix(in srgb, var(--ui-bg) 85%, transparent);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-card);
+}
+
+.drag-ghost {
+  opacity: 0.6;
+  transform: rotate(2deg);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.board-column-scroll {
+  scrollbar-width: thin;
+}
+
+.prose-vacation h1,
+.prose-vacation h2,
+.prose-vacation h3 {
+  color: var(--ui-text-highlighted);
+  font-weight: 600;
+}
+
+.prose-vacation p {
+  margin-bottom: 0.75rem;
+  line-height: 1.7;
+}
+
+.prose-vacation ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose-vacation a {
+  color: var(--color-terracotta-500);
+  text-decoration: underline;
+}
