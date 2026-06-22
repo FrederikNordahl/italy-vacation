@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { ActivityDto, ActivityLinkDto } from '../../../shared/types/activity'
+import type { ActivityDto, ActivityLinkDto } from '#shared/types/activity'
 import { renderMarkdown } from '../../utils/markdown'
+import { da } from '#shared/i18n/da'
 
 const props = defineProps<{
   activity: ActivityDto
@@ -12,12 +13,12 @@ const emit = defineEmits<{
 }>()
 
 const { isAdmin } = useIdentity()
+const { categoryLabel, statusLabel } = useDa()
 const { deleteActivity, fetchActivities } = useActivities()
 
 const showEditor = ref(false)
 const uploading = ref(false)
 const links = ref<ActivityLinkDto[]>([...props.activity.links])
-const voteScore = ref(props.activity.voteScore)
 
 const renderedDescription = computed(() =>
   renderMarkdown(props.activity.description)
@@ -39,8 +40,6 @@ const coverImage = computed(() =>
 
 async function onVoted() {
   await fetchActivities()
-  const updated = useActivities().getActivity(props.activity.id)
-  if (updated) voteScore.value = updated.voteScore
   emit('updated')
 }
 
@@ -50,7 +49,7 @@ async function handleImageUpload(event: Event) {
   if (!file || !isAdmin.value) return
 
   if (file.size > 4.5 * 1024 * 1024) {
-    alert('Image must be under 4.5MB')
+    alert(da.imageTooLarge)
     return
   }
 
@@ -69,7 +68,7 @@ async function handleImageUpload(event: Event) {
 }
 
 async function handleDelete() {
-  if (!confirm('Delete this activity?')) return
+  if (!confirm(da.deleteConfirm)) return
   await deleteActivity(props.activity.id)
   emit('deleted')
 }
@@ -90,7 +89,7 @@ onMounted(async () => {
       <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-t-xl" />
       <div class="absolute bottom-4 left-4 right-4">
         <UBadge color="primary" variant="solid" class="mb-2">
-          {{ activity.category }}
+          {{ categoryLabel(activity.category) }}
         </UBadge>
         <h1 class="text-2xl sm:text-3xl font-bold text-white">
           {{ activity.title }}
@@ -100,7 +99,7 @@ onMounted(async () => {
 
     <div v-else>
       <UBadge color="primary" variant="subtle" class="mb-2">
-        {{ activity.category }}
+        {{ categoryLabel(activity.category) }}
       </UBadge>
       <h1 class="text-2xl sm:text-3xl font-bold">
         {{ activity.title }}
@@ -109,7 +108,7 @@ onMounted(async () => {
 
     <div v-if="isAdmin" class="flex flex-wrap gap-2">
       <UButton
-        label="Edit"
+        :label="da.edit"
         icon="i-lucide-pencil"
         color="neutral"
         variant="outline"
@@ -118,7 +117,7 @@ onMounted(async () => {
       />
       <label>
         <UButton
-          label="Upload image"
+          :label="da.uploadImage"
           icon="i-lucide-image-plus"
           color="neutral"
           variant="outline"
@@ -134,7 +133,7 @@ onMounted(async () => {
         >
       </label>
       <UButton
-        label="Delete"
+        :label="da.delete"
         icon="i-lucide-trash-2"
         color="error"
         variant="outline"
@@ -148,10 +147,10 @@ onMounted(async () => {
         <UIcon name="i-lucide-car" class="size-5 text-primary" />
         <div>
           <p class="text-xs text-muted">
-            Drive time
+            {{ da.driveTime }}
           </p>
           <p class="font-semibold">
-            {{ activity.driveTimeMinutes }} minutes
+            {{ activity.driveTimeMinutes }} {{ da.minutes }}
           </p>
         </div>
       </div>
@@ -159,10 +158,10 @@ onMounted(async () => {
         <UIcon name="i-lucide-clock" class="size-5 text-primary" />
         <div>
           <p class="text-xs text-muted">
-            Duration
+            {{ da.duration }}
           </p>
           <p class="font-semibold">
-            ~{{ activity.estimatedDurationHours }} hours
+            ~{{ activity.estimatedDurationHours }} {{ da.hours }}
           </p>
         </div>
       </div>
@@ -170,7 +169,7 @@ onMounted(async () => {
         <UIcon name="i-lucide-route" class="size-5 text-primary" />
         <div>
           <p class="text-xs text-muted">
-            Distance
+            {{ da.distance }}
           </p>
           <p class="font-semibold">
             {{ activity.distanceKm }} km
@@ -181,7 +180,7 @@ onMounted(async () => {
         <UIcon name="i-lucide-map-pin" class="size-5 text-primary" />
         <div>
           <p class="text-xs text-muted">
-            Address
+            {{ da.address }}
           </p>
           <p class="font-semibold text-sm">
             {{ activity.address }}
@@ -192,7 +191,7 @@ onMounted(async () => {
         v-if="mapsUrl"
         :to="mapsUrl"
         target="_blank"
-        label="Open in Google Maps"
+        :label="da.openMaps"
         icon="i-lucide-navigation"
         color="primary"
         variant="soft"
@@ -213,20 +212,14 @@ onMounted(async () => {
 
     <div v-if="activity.notes" class="p-3 rounded-lg bg-warning/10 border border-warning/20 text-sm">
       <p class="font-medium text-warning mb-1">
-        Notes
+        {{ da.notes }}
       </p>
       <p>{{ activity.notes }}</p>
     </div>
 
     <VotePanel
       :activity-id="activity.id"
-      :vote-score="voteScore"
       @voted="onVoted"
-    />
-
-    <CommentThread
-      :activity-id="activity.id"
-      @commented="emit('updated')"
     />
 
     <ActivityEditor

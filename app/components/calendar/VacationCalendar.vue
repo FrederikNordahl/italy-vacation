@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import type { ActivityListItem } from '../../../shared/types/activity'
-import { VACATION_DAYS, VACATION_START, VACATION_END } from '../../../shared/constants/vacation'
+import type { ActivityListItem } from '#shared/types/activity'
+import { VACATION_DAYS, VACATION_START, VACATION_END } from '#shared/constants/vacation'
 import { parseISO, format, isWithinInterval } from 'date-fns'
+import { da } from '#shared/i18n/da'
 
 const { isAdmin } = useIdentity()
 const { byDay, batchUpdate } = useActivities()
@@ -36,8 +37,6 @@ const calendarDays = computed(() => {
   return days
 })
 
-const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-
 async function moveActivity(activityId: string, newDate: string) {
   if (!isAdmin.value) return
   const dayActivities = byDay.value.find(d => d.date === newDate)?.activities ?? []
@@ -68,15 +67,15 @@ function onActivityClick(activity: ActivityListItem, event: MouseEvent) {
       <UAlert
         color="primary"
         variant="subtle"
-        title="Activity selected"
-        description="Click a vacation day to assign it, or Shift+click another activity."
-        :actions="[{ label: 'Cancel', onClick: () => selectedActivityId = null }]"
+        :title="da.calendarActivitySelected"
+        :description="da.calendarActivitySelectedDesc"
+        :actions="[{ label: da.cancel, onClick: () => { selectedActivityId = null } }]"
       />
     </div>
 
     <div class="grid grid-cols-7 gap-1 sm:gap-2">
       <div
-        v-for="day in weekDays"
+        v-for="day in da.weekDays"
         :key="day"
         class="text-center text-xs font-medium text-muted py-2"
       >
@@ -84,12 +83,11 @@ function onActivityClick(activity: ActivityListItem, event: MouseEvent) {
       </div>
 
       <div
-        v-for="(day, idx) in calendarDays"
+        v-for="day in calendarDays"
         :key="day.date"
         :class="[
           'min-h-20 sm:min-h-28 rounded-lg border p-1 sm:p-2 transition-colors',
           day.inVacation ? 'bg-primary/5 border-primary/20' : 'bg-elevated/30 border-default',
-          idx % 7 === 0 ? '' : '',
           isAdmin && day.inVacation ? 'cursor-pointer hover:bg-primary/10' : ''
         ]"
         @click="day.inVacation && assignSelectedToDay(day.date)"
@@ -121,9 +119,9 @@ function onActivityClick(activity: ActivityListItem, event: MouseEvent) {
     <div class="mt-4 flex flex-wrap gap-2 text-xs text-muted">
       <span class="flex items-center gap-1">
         <span class="w-3 h-3 rounded bg-primary/20 border border-primary/30" />
-        Vacation days ({{ VACATION_DAYS[0]?.label }} – {{ VACATION_DAYS[VACATION_DAYS.length - 1]?.label }})
+        {{ da.calendarVacationDays }} ({{ VACATION_DAYS[0]?.label }} – {{ VACATION_DAYS[VACATION_DAYS.length - 1]?.label }})
       </span>
-      <span v-if="isAdmin">Shift+click to select · Click day to assign</span>
+      <span v-if="isAdmin">{{ da.calendarShiftHint }}</span>
     </div>
   </div>
 </template>

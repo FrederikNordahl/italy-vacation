@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
       include: {
         images: { orderBy: { sortOrder: 'asc' } },
         votes: true,
-        _count: { select: { comments: true, votes: true } }
+        _count: { select: { votes: true } }
       }
     })
 
@@ -57,20 +57,13 @@ export default defineEventHandler(async (event) => {
       images: { orderBy: { sortOrder: 'asc' } },
       links: { orderBy: { sortOrder: 'asc' } },
       votes: true,
-      comments: { orderBy: { createdAt: 'asc' } },
-      _count: { select: { comments: true, votes: true } }
+      _count: { select: { votes: true } }
     }
   })
 
   return {
     ...serializeActivity(activity),
     links: activity.links,
-    votes: activity.votes,
-    comments: activity.comments.map(c => ({
-      id: c.id,
-      userName: c.userName,
-      message: c.message,
-      createdAt: c.createdAt.toISOString()
-    }))
+    votes: activity.votes
   }
 })

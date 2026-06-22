@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { VueDraggable } from 'vue-draggable-plus'
-import type { ActivityListItem } from '../../../shared/types/activity'
+import type { ActivityListItem } from '#shared/types/activity'
+import { da } from '#shared/i18n/da'
 
 const props = defineProps<{
   title: string
-  subtitle?: string
   date: string | null
   activities: ActivityListItem[]
-  disabled?: boolean
+  isBacklog?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -28,44 +28,85 @@ function onChange() {
 </script>
 
 <template>
-  <div class="flex flex-col w-72 shrink-0 rounded-xl bg-elevated/50 border border-default">
-    <div class="p-3 border-b border-default">
-      <h3 class="font-semibold text-sm">
+  <section
+    class="rounded-2xl border bg-default shadow-sm overflow-hidden"
+    :class="isBacklog ? 'border-dashed border-muted' : 'border-default'"
+  >
+    <div
+      class="flex items-center justify-between gap-3 px-4 sm:px-5 py-3 border-b border-default"
+      :class="isBacklog ? 'bg-muted/30' : 'bg-terracotta-50/80 dark:bg-terracotta-950/20'"
+    >
+      <h3 class="font-semibold text-base sm:text-lg capitalize text-highlighted">
         {{ title }}
       </h3>
-      <p v-if="subtitle" class="text-xs text-muted mt-0.5">
-        {{ subtitle }}
-      </p>
-      <UBadge color="neutral" variant="subtle" size="xs" class="mt-1">
+      <UBadge
+        v-if="localActivities.length"
+        color="neutral"
+        variant="subtle"
+        size="md"
+      >
         {{ localActivities.length }}
       </UBadge>
     </div>
 
-    <div class="p-2 flex-1 min-h-[120px] max-h-[calc(100vh-280px)] overflow-y-auto board-column-scroll">
-      <VueDraggable
-        v-model="localActivities"
-        group="vacation-board"
-        :disabled="disabled"
-        :animation="200"
-        ghost-class="drag-ghost"
-        class="flex flex-col gap-2 min-h-[80px]"
-        @sort="onChange"
-        @add="onChange"
-        @remove="onChange"
-      >
-        <ActivityCard
-          v-for="activity in localActivities"
-          :key="activity.id"
-          :activity="activity"
-        />
-      </VueDraggable>
+    <div class="p-3 sm:p-4">
+      <ClientOnly>
+        <div
+          class="relative rounded-xl transition-colors"
+          :class="[
+            localActivities.length
+              ? 'min-h-0'
+              : 'min-h-20 border-2 border-dashed border-muted/80 bg-muted/15 hover:border-primary/35 hover:bg-primary/5'
+          ]"
+        >
+          <p
+            v-if="!localActivities.length"
+            class="absolute inset-0 flex items-center justify-center text-sm text-muted pointer-events-none px-4 text-center"
+          >
+            {{ da.noPlans }}
+          </p>
 
-      <p
-        v-if="!localActivities.length"
-        class="text-xs text-muted text-center py-6"
-      >
-        Drop activities here
-      </p>
+          <VueDraggable
+            v-model="localActivities"
+            group="vacation-board"
+            :animation="180"
+            filter=".vote-controls"
+            ghost-class="drag-ghost"
+            class="flex flex-col gap-2.5 sm:gap-3 relative z-10"
+            :class="{ 'min-h-20': !localActivities.length }"
+            @sort="onChange"
+            @add="onChange"
+            @remove="onChange"
+          >
+            <ActivityCard
+              v-for="activity in localActivities"
+              :key="activity.id"
+              :activity="activity"
+            />
+          </VueDraggable>
+        </div>
+
+        <template #fallback>
+          <div
+            class="rounded-xl p-3"
+            :class="!localActivities.length ? 'min-h-20 border-2 border-dashed border-muted/80' : ''"
+          >
+            <p
+              v-if="!localActivities.length"
+              class="text-sm text-muted text-center py-6"
+            >
+              {{ da.noPlans }}
+            </p>
+            <div class="flex flex-col gap-3">
+              <ActivityCard
+                v-for="activity in localActivities"
+                :key="activity.id"
+                :activity="activity"
+              />
+            </div>
+          </div>
+        </template>
+      </ClientOnly>
     </div>
-  </div>
+  </section>
 </template>

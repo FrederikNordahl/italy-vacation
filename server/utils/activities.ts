@@ -1,15 +1,23 @@
 import type { Activity, ActivityImage, Vote } from '@prisma/client'
-import type { ActivityListItem } from '../../shared/types/activity'
+import type { ActivityListItem } from '#shared/types/activity'
 import { format } from 'date-fns'
 
 type ActivityWithRelations = Activity & {
   images: ActivityImage[]
   votes: Vote[]
-  _count: { comments: number, votes: number }
+  _count: { votes: number }
 }
 
 export function computeVoteScore(votes: { value: number }[]): number {
   return votes.reduce((sum, v) => sum + v.value, 0)
+}
+
+export function countUpvotes(votes: { value: number }[]): number {
+  return votes.filter(v => v.value === 1).length
+}
+
+export function countDownvotes(votes: { value: number }[]): number {
+  return votes.filter(v => v.value === -1).length
 }
 
 export function formatScheduledDate(date: Date | null): string | null {
@@ -50,6 +58,12 @@ export function serializeActivity(activity: ActivityWithRelations): ActivityList
       ? { id: coverImage.id, url: coverImage.url, isCover: coverImage.isCover, sortOrder: coverImage.sortOrder }
       : null,
     voteScore: computeVoteScore(activity.votes),
+    upvotes: countUpvotes(activity.votes),
+    downvotes: countDownvotes(activity.votes),
+    votes: activity.votes.map(v => ({
+      userName: v.userName,
+      value: v.value
+    })),
     _count: activity._count
   }
 }
@@ -74,7 +88,7 @@ export function sortActivities(items: ActivityListItem[], sortBy?: string): Acti
     case 'driveTime':
       return sorted.sort((a, b) => (a.driveTimeMinutes ?? 999) - (b.driveTimeMinutes ?? 999))
     case 'votes':
-      return sorted.sort((a, b) => b.voteScore - a.voteScore)
+      return sorted.sort((a, b) => b.upvotes - a.upvotes || a.downvotes - b.downvotes)
     case 'category':
       return sorted.sort((a, b) => a.category.localeCompare(b.category))
     case 'title':

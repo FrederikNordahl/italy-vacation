@@ -20,11 +20,9 @@ export interface VoteDto {
   value: number
 }
 
-export interface CommentDto {
-  id: string
+export interface ActivityVoteSummary {
   userName: UserIdentityName
-  message: string
-  createdAt: string
+  value: number
 }
 
 export interface ActivityDto {
@@ -51,19 +49,21 @@ export interface ActivityDto {
   images: ActivityImageDto[]
   links: ActivityLinkDto[]
   votes: VoteDto[]
-  comments: CommentDto[]
   voteScore: number
+  upvotes: number
+  downvotes: number
   _count?: {
-    comments: number
     votes: number
   }
 }
 
-export interface ActivityListItem extends Omit<ActivityDto, 'votes' | 'comments' | 'links'> {
+export interface ActivityListItem extends Omit<ActivityDto, 'votes' | 'links'> {
   coverImage?: ActivityImageDto | null
   voteScore: number
+  upvotes: number
+  downvotes: number
+  votes: ActivityVoteSummary[]
   _count: {
-    comments: number
     votes: number
   }
 }

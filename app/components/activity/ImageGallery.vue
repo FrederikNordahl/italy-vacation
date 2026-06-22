@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ActivityImageDto } from '../../../shared/types/activity'
+import type { ActivityImageDto } from '#shared/types/activity'
 
 const props = defineProps<{
   images: ActivityImageDto[]

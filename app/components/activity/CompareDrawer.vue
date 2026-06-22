@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { ActivityListItem } from '../../../shared/types/activity'
+import type { ActivityListItem } from '#shared/types/activity'
+import { da, categoryLabel, statusLabel } from '#shared/i18n/da'
 
 const props = defineProps<{
   activities: ActivityListItem[]
@@ -37,11 +38,11 @@ watch(open, (val) => {
 </script>
 
 <template>
-  <USlideover v-model:open="open" title="Compare Activities">
+  <USlideover v-model:open="open" :title="da.compareTitle">
     <template #body>
       <div v-if="step === 'select'" class="space-y-4">
         <p class="text-sm text-muted">
-          Select 2–3 activities to compare ({{ selectedIds.length }}/3)
+          {{ da.compareSelect }} ({{ selectedIds.length }}/3)
         </p>
         <div class="space-y-2 max-h-96 overflow-y-auto">
           <button
@@ -55,11 +56,11 @@ watch(open, (val) => {
             @click="toggle(activity.id)"
           >
             <span class="font-medium text-sm">{{ activity.title }}</span>
-            <span class="text-xs text-muted block">{{ activity.category }}</span>
+            <span class="text-xs text-muted block">{{ categoryLabel(activity.category) }}</span>
           </button>
         </div>
         <UButton
-          label="Compare selected"
+          :label="da.compareSelected"
           :disabled="selectedIds.length < 2"
           block
           @click="startCompare"
@@ -85,10 +86,10 @@ watch(open, (val) => {
           <tbody>
             <tr class="border-b border-default">
               <td class="p-2 text-muted">
-                Category
+                {{ da.category }}
               </td>
               <td v-for="a in selectedActivities" :key="a.id" class="p-2">
-                {{ a.category }}
+                {{ categoryLabel(a.category) }}
               </td>
             </tr>
             <tr class="border-b border-default">
@@ -96,12 +97,12 @@ watch(open, (val) => {
                 Status
               </td>
               <td v-for="a in selectedActivities" :key="a.id" class="p-2">
-                {{ a.status }}
+                {{ statusLabel(a.status) }}
               </td>
             </tr>
             <tr class="border-b border-default">
               <td class="p-2 text-muted">
-                Drive time
+                {{ da.driveTime }}
               </td>
               <td v-for="a in selectedActivities" :key="a.id" class="p-2">
                 {{ a.driveTimeMinutes ? `${a.driveTimeMinutes} min` : '—' }}
@@ -109,15 +110,15 @@ watch(open, (val) => {
             </tr>
             <tr class="border-b border-default">
               <td class="p-2 text-muted">
-                Duration
+                {{ da.duration }}
               </td>
               <td v-for="a in selectedActivities" :key="a.id" class="p-2">
-                {{ a.estimatedDurationHours ? `${a.estimatedDurationHours}h` : '—' }}
+                {{ a.estimatedDurationHours ? `${a.estimatedDurationHours} t` : '—' }}
               </td>
             </tr>
             <tr class="border-b border-default">
               <td class="p-2 text-muted">
-                Distance
+                {{ da.distance }}
               </td>
               <td v-for="a in selectedActivities" :key="a.id" class="p-2">
                 {{ a.distanceKm ? `${a.distanceKm} km` : '—' }}
@@ -125,17 +126,19 @@ watch(open, (val) => {
             </tr>
             <tr>
               <td class="p-2 text-muted">
-                Vote score
+                {{ da.votes }}
               </td>
-              <td v-for="a in selectedActivities" :key="a.id" class="p-2">
-                {{ a.voteScore }}
+              <td v-for="a in selectedActivities" :key="a.id" class="p-2 tabular-nums">
+                <span class="text-success">{{ a.upvotes }}</span>
+                <span class="text-muted mx-1">/</span>
+                <span class="text-error">{{ a.downvotes }}</span>
               </td>
             </tr>
           </tbody>
         </table>
 
         <UButton
-          label="Change selection"
+          :label="da.changeSelection"
           color="neutral"
           variant="ghost"
           class="mt-4"

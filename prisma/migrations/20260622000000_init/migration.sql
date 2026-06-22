@@ -2,10 +2,10 @@
 CREATE SCHEMA IF NOT EXISTS "public";
 
 -- CreateEnum
-CREATE TYPE "UserIdentityName" AS ENUM ('Frederik', 'Soren', 'Marie', 'Peter', 'Anna', 'Lars', 'Emma', 'Jonas');
+CREATE TYPE "UserIdentityName" AS ENUM ('Anja', 'Per', 'Sarah', 'Frederik', 'Joan', 'Jane', 'Soren', 'Esther');
 
 -- CreateEnum
-CREATE TYPE "ActivityCategory" AS ENUM ('Culture', 'Food', 'Wine', 'Nature', 'History', 'Shopping', 'Adventure', 'Relaxation', 'Event');
+CREATE TYPE "ActivityCategory" AS ENUM ('Wine', 'Food', 'Sightseeing', 'Nature', 'Swimming', 'Historic', 'Event', 'Relaxation', 'Other');
 
 -- CreateEnum
 CREATE TYPE "ActivityStatus" AS ENUM ('Idea', 'Planned', 'Booked', 'Completed');

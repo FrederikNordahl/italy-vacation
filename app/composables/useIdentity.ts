@@ -2,7 +2,7 @@ import {
   IDENTITIES,
   ADMIN_IDENTITY,
   type IdentityName
-} from '../../shared/constants/vacation'
+} from '#shared/constants/vacation'
 
 const DISPLAY_MAP: Record<string, string> = {
   Soren: 'Søren'
@@ -13,7 +13,7 @@ export function displayIdentity(name: string): string {
 }
 
 export function toApiIdentity(name: IdentityName): string {
-  return name === 'Søren' ? 'Søren' : name
+  return name === 'Søren' ? 'Soren' : name
 }
 
 export function useIdentity() {

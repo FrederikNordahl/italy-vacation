@@ -8,26 +8,26 @@ datasource db {
 }
 
 enum UserIdentityName {
+  Anja
+  Per
+  Sarah
   Frederik
+  Joan
+  Jane
   Soren
-  Marie
-  Peter
-  Anna
-  Lars
-  Emma
-  Jonas
+  Esther
 }
 
 enum ActivityCategory {
-  Culture
-  Food
   Wine
+  Food
+  Sightseeing
   Nature
-  History
-  Shopping
-  Adventure
-  Relaxation
+  Swimming
+  Historic
   Event
+  Relaxation
+  Other
 }
 
 enum ActivityStatus {

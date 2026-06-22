@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { VACATION_DAYS } from '../../shared/constants/vacation'
+import { VACATION_DAYS } from '#shared/constants/vacation'
+import { da } from '#shared/i18n/da'
 
 definePageMeta({ layout: 'default' })
 
 const { activities, loading, fetchActivities } = useActivities()
 
-onMounted(() => fetchActivities())
+await useAsyncData('activities-list', () => fetchActivities())
 
 const itineraryStatuses = ['Planned', 'Booked', 'Completed']
 
@@ -31,10 +32,10 @@ const unscheduledPlanned = computed(() =>
 <template>
   <div>
     <h1 class="text-2xl sm:text-3xl font-bold mb-2">
-      Itinerary
+      {{ da.itinerary }}
     </h1>
     <p class="text-muted text-sm mb-6">
-      Day-by-day plan for activities marked Planned, Booked, or Completed.
+      {{ da.itineraryDesc }}
     </p>
 
     <div v-if="loading" class="flex justify-center py-16">
@@ -44,9 +45,9 @@ const unscheduledPlanned = computed(() =>
     <div v-else-if="!itineraryByDay.length && !unscheduledPlanned.length" class="text-center py-16">
       <UIcon name="i-lucide-calendar-off" class="size-12 text-muted mx-auto mb-4" />
       <p class="text-muted">
-        No planned activities yet. Schedule some on the board!
+        {{ da.noItinerary }}
       </p>
-      <UButton label="Go to board" to="/" class="mt-4" />
+      <UButton :label="da.goToBoard" to="/" class="mt-4" />
     </div>
 
     <div v-else class="space-y-6">
@@ -64,7 +65,7 @@ const unscheduledPlanned = computed(() =>
               {{ day.dayOfWeek }}, {{ day.label }}
             </h2>
             <p class="text-xs text-muted">
-              {{ day.activities.length }} activit{{ day.activities.length === 1 ? 'y' : 'ies' }}
+              {{ da.activityCount(day.activities.length) }}
             </p>
           </div>
         </div>
@@ -82,7 +83,7 @@ const unscheduledPlanned = computed(() =>
 
       <section v-if="unscheduledPlanned.length" class="glass-card rounded-xl p-4 sm:p-6">
         <h2 class="font-semibold mb-4">
-          Planned but unscheduled
+          {{ da.plannedUnscheduled }}
         </h2>
         <div class="space-y-3">
           <ActivityCard

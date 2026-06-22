@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { ActivityLinkDto } from '../../../shared/types/activity'
+import type { ActivityLinkDto } from '#shared/types/activity'
+import { da } from '#shared/i18n/da'
 
 defineProps<{
   links: ActivityLinkDto[]
@@ -9,7 +10,7 @@ defineProps<{
 <template>
   <div v-if="links.length" class="space-y-2">
     <h3 class="font-semibold text-sm">
-      Learn more
+      {{ da.learnMore }}
     </h3>
     <div class="flex flex-wrap gap-2">
       <UButton

@@ -1,43 +1,22 @@
-import type { ActivityListItem, SortBy } from '../../shared/types/activity'
-import { VACATION_DAYS } from '../../shared/constants/vacation'
-
-interface ActivityFilters {
-  search: string
-  category: string | null
-  maxDriveMinutes: number | null
-  sortBy: SortBy
-}
-
-const activities = ref<ActivityListItem[]>([])
-const loading = ref(false)
-const error = ref<string | null>(null)
-const filters = ref<ActivityFilters>({
-  search: '',
-  category: null,
-  maxDriveMinutes: null,
-  sortBy: 'driveTime'
-})
+import type { ActivityListItem } from '#shared/types/activity'
+import { VACATION_DAYS } from '#shared/constants/vacation'
 
 export function useActivities() {
+  const activities = useState<ActivityListItem[]>('activities', () => [])
+  const loading = useState('activities-loading', () => false)
+  const error = useState<string | null>('activities-error', () => null)
+
   async function fetchActivities() {
     loading.value = true
     error.value = null
     try {
-      const params = new URLSearchParams()
-      if (filters.value.search) params.set('search', filters.value.search)
-      if (filters.value.category) params.set('category', filters.value.category)
-      if (filters.value.maxDriveMinutes !== null) {
-        params.set('maxDriveMinutes', String(filters.value.maxDriveMinutes))
-      }
-      if (filters.value.sortBy) params.set('sortBy', filters.value.sortBy)
-
-      const query = params.toString()
-      const data = await $fetch<ActivityListItem[]>(
-        `/api/activities${query ? `?${query}` : ''}`
-      )
+      const data = await $fetch<ActivityListItem[]>('/api/activities')
       activities.value = data
+      return data
     } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Failed to load activities'
+      error.value = e instanceof Error ? e.message : 'Kunne ikke hente aktiviteter'
+      activities.value = []
+      return []
     } finally {
       loading.value = false
     }
@@ -63,7 +42,7 @@ export function useActivities() {
   }
 
   async function updateActivity(id: string, data: Record<string, unknown>) {
-    const updated = await $fetch(`/api/activities/${id}`, {
+    const updated = await $fetch<ActivityListItem>(`/api/activities/${id}`, {
       method: 'PATCH',
       body: data
     })
@@ -84,9 +63,10 @@ export function useActivities() {
     const previous = [...activities.value]
     for (const u of updates) {
       const idx = activities.value.findIndex(a => a.id === u.id)
-      if (idx !== -1) {
+      const current = activities.value[idx]
+      if (idx !== -1 && current) {
         activities.value[idx] = {
-          ...activities.value[idx],
+          ...current,
           scheduledDate: u.scheduledDate,
           sortOrder: u.sortOrder
         }
@@ -94,7 +74,10 @@ export function useActivities() {
     }
 
     try {
-      const result = await $fetch<ActivityListItem[]>(`/api/activities/${updates[0].id}`, {
+      const firstId = updates[0]?.id
+      if (!firstId) return
+
+      const result = await $fetch<ActivityListItem[]>(`/api/activities/${firstId}`, {
         method: 'PATCH',
         body: { batchUpdates: updates }
       })
@@ -107,7 +90,7 @@ export function useActivities() {
       }
     } catch {
       activities.value = previous
-      throw new Error('Failed to save schedule changes')
+      throw new Error('Kunne ikke gemme ændringer på tidsplanen')
     }
   }
 
@@ -133,23 +116,10 @@ export function useActivities() {
     await fetchActivities()
   }
 
-  async function addComment(activityId: string, userName: string, message: string) {
-    const comment = await $fetch('/api/comments', {
-      method: 'POST',
-      body: { activityId, userName, message }
-    })
-    const activity = activities.value.find(a => a.id === activityId)
-    if (activity?._count) {
-      activity._count.comments += 1
-    }
-    return comment
-  }
-
   return {
     activities,
     loading,
     error,
-    filters,
     unscheduled,
     byDay,
     fetchActivities,
@@ -159,7 +129,6 @@ export function useActivities() {
     batchUpdate,
     createActivity,
     deleteActivity,
-    vote,
-    addComment
+    vote
   }
 }

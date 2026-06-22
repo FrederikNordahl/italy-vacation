@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { da } from '#shared/i18n/da'
+
 useHead({
   meta: [
     { name: 'viewport', content: 'width=device-width, initial-scale=1' }
@@ -7,15 +9,15 @@ useHead({
     { rel: 'icon', href: '/favicon.ico' }
   ],
   htmlAttrs: {
-    lang: 'en'
+    lang: 'da'
   }
 })
 
 useSeoMeta({
-  title: 'Tuscany Vacation Planner 2026',
-  description: 'Plan our Tuscany vacation — Jun 27 to Jul 4, 2026. Board, calendar, votes, and itinerary.',
-  ogTitle: 'Tuscany Vacation Planner 2026',
-  ogDescription: 'Plan our Tuscany vacation with board, calendar, votes, and itinerary.'
+  title: da.appTitle,
+  description: da.appDescription,
+  ogTitle: da.appTitle,
+  ogDescription: da.appDescription
 })
 </script>
 

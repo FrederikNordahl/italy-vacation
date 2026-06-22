@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
     include: {
       images: true,
       votes: true,
-      _count: { select: { comments: true, votes: true } }
+      _count: { select: { votes: true } }
     }
   })
 

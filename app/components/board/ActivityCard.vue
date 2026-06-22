@@ -1,78 +1,133 @@
 <script setup lang="ts">
-import type { ActivityListItem } from '../../shared/types/activity'
+import type { ActivityListItem } from '#shared/types/activity'
 
-defineProps<{
+const props = defineProps<{
   activity: ActivityListItem
-  compact?: boolean
 }>()
 
-const statusColors: Record<string, 'neutral' | 'primary' | 'success' | 'warning'> = {
-  Idea: 'neutral',
-  Planned: 'primary',
-  Booked: 'success',
-  Completed: 'warning'
+const { categoryLabel, categoryColor } = useDa()
+const { identity, requireIdentity } = useIdentity()
+const { vote } = useActivities()
+
+const voting = ref(false)
+const imageError = ref(false)
+
+watch(() => props.activity.coverImage?.url, () => {
+  imageError.value = false
+})
+
+const myVote = computed(() => {
+  if (!identity.value) return null
+  const apiName = toApiIdentity(identity.value)
+  return props.activity.votes.find(v => v.userName === apiName || v.userName === identity.value)
+})
+
+async function castVote(value: 1 | -1) {
+  if (!requireIdentity() || !identity.value || voting.value) return
+  voting.value = true
+  try {
+    await vote(props.activity.id, identity.value, value)
+  } finally {
+    voting.value = false
+  }
 }
 </script>
 
 <template>
-  <NuxtLink
-    :to="`/activity/${activity.id}`"
-    class="block glass-card rounded-xl p-3 transition-all hover:shadow-[var(--shadow-card-hover)] hover:-translate-y-0.5"
+  <div
+    class="group flex items-stretch gap-2 sm:gap-3 rounded-xl border border-default bg-elevated/40 p-2.5 sm:p-3 shadow-sm hover:shadow-md hover:border-primary/25 transition-all"
   >
-    <div class="flex gap-3">
-      <div
-        v-if="activity.coverImage"
-        class="shrink-0 w-14 h-14 rounded-lg overflow-hidden bg-muted"
-      >
+    <NuxtLink
+      :to="`/activity/${activity.id}`"
+      class="flex items-center gap-3 min-w-0 flex-1"
+    >
+      <div class="shrink-0 size-16 sm:size-[4.5rem] rounded-xl overflow-hidden bg-muted ring-1 ring-default">
         <img
+          v-if="activity.coverImage && !imageError"
           :src="activity.coverImage.url"
           :alt="activity.title"
-          class="w-full h-full object-cover"
+          class="size-full object-cover"
+          loading="lazy"
+          referrerpolicy="no-referrer"
+          @error="imageError = true"
         >
-      </div>
-      <div
-        v-else
-        class="shrink-0 w-14 h-14 rounded-lg bg-terracotta-100 dark:bg-terracotta-900/30 flex items-center justify-center"
-      >
-        <UIcon name="i-lucide-map-pin" class="text-terracotta-500 size-5" />
-      </div>
-
-      <div class="min-w-0 flex-1">
-        <div class="flex items-start justify-between gap-2">
-          <h3 class="font-semibold text-sm leading-tight truncate">
-            {{ activity.title }}
-          </h3>
-          <UBadge
-            :color="statusColors[activity.status]"
-            variant="subtle"
-            size="xs"
-          >
-            {{ activity.status }}
-          </UBadge>
+        <div
+          v-else
+          class="size-full flex items-center justify-center bg-terracotta-100 dark:bg-terracotta-900/30"
+        >
+          <UIcon name="i-lucide-map-pin" class="text-terracotta-500 size-6" />
         </div>
+      </div>
 
-        <div class="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1.5 text-xs text-muted">
-          <UBadge color="neutral" variant="subtle" size="xs">
-            {{ activity.category }}
-          </UBadge>
-          <span v-if="activity.driveTimeMinutes" class="flex items-center gap-0.5">
-            <UIcon name="i-lucide-car" class="size-3" />
+      <div class="min-w-0 flex-1 py-0.5">
+        <UBadge
+          :color="categoryColor(activity.category)"
+          variant="subtle"
+          size="sm"
+          class="mb-1.5"
+        >
+          {{ categoryLabel(activity.category) }}
+        </UBadge>
+
+        <p class="font-semibold text-sm sm:text-base leading-snug line-clamp-2 text-highlighted">
+          {{ activity.title }}
+        </p>
+
+        <div
+          v-if="activity.driveTimeMinutes || activity.estimatedDurationHours"
+          class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs sm:text-sm text-muted"
+        >
+          <span
+            v-if="activity.driveTimeMinutes"
+            class="inline-flex items-center gap-1.5"
+          >
+            <UIcon name="i-lucide-car" class="size-3.5 shrink-0" />
             {{ activity.driveTimeMinutes }} min
           </span>
-          <span v-if="activity.estimatedDurationHours" class="flex items-center gap-0.5">
-            <UIcon name="i-lucide-clock" class="size-3" />
-            {{ activity.estimatedDurationHours }}h
-          </span>
-          <span class="flex items-center gap-0.5">
-            <UIcon name="i-lucide-thumbs-up" class="size-3" />
-            {{ activity.voteScore }}
-          </span>
-          <span v-if="activity._count?.comments" class="flex items-center gap-0.5">
-            <UIcon name="i-lucide-message-circle" class="size-3" />
-            {{ activity._count.comments }}
+          <span
+            v-if="activity.estimatedDurationHours"
+            class="inline-flex items-center gap-1.5"
+          >
+            <UIcon name="i-lucide-clock" class="size-3.5 shrink-0" />
+            {{ activity.estimatedDurationHours }} t
           </span>
         </div>
       </div>
+    </NuxtLink>
+
+    <div
+      class="vote-controls flex flex-col items-center justify-center gap-1 shrink-0 pl-1 sm:pl-2 border-l border-default/80"
+      @click.stop
+      @mousedown.stop
+    >
+      <div class="flex flex-col items-center gap-0.5">
+        <UButton
+          icon="i-lucide-thumbs-up"
+          size="sm"
+          :color="myVote?.value === 1 ? 'success' : 'neutral'"
+          :variant="myVote?.value === 1 ? 'solid' : 'ghost'"
+          :loading="voting"
+          aria-label="Stem for"
+          @click="castVote(1)"
+        />
+        <span class="text-xs sm:text-sm font-semibold tabular-nums text-success leading-none">
+          {{ activity.upvotes }}
+        </span>
+      </div>
+      <div class="flex flex-col items-center gap-0.5">
+        <UButton
+          icon="i-lucide-thumbs-down"
+          size="sm"
+          :color="myVote?.value === -1 ? 'error' : 'neutral'"
+          :variant="myVote?.value === -1 ? 'solid' : 'ghost'"
+          :loading="voting"
+          aria-label="Stem imod"
+          @click="castVote(-1)"
+        />
+        <span class="text-xs sm:text-sm font-semibold tabular-nums text-error leading-none">
+          {{ activity.downvotes }}
+        </span>
+      </div>
     </div>
-  </NuxtLink>
+  </div>
 </template>

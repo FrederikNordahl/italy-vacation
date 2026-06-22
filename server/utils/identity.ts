@@ -1,26 +1,26 @@
 import type { UserIdentityName } from '@prisma/client'
 
 const IDENTITY_MAP: Record<string, UserIdentityName> = {
+  Anja: 'Anja',
+  Per: 'Per',
+  Sarah: 'Sarah',
   Frederik: 'Frederik',
+  Joan: 'Joan',
+  Jane: 'Jane',
   Søren: 'Soren',
   Soren: 'Soren',
-  Marie: 'Marie',
-  Peter: 'Peter',
-  Anna: 'Anna',
-  Lars: 'Lars',
-  Emma: 'Emma',
-  Jonas: 'Jonas'
+  Esther: 'Esther'
 }
 
 const DISPLAY_MAP: Record<UserIdentityName, string> = {
+  Anja: 'Anja',
+  Per: 'Per',
+  Sarah: 'Sarah',
   Frederik: 'Frederik',
+  Joan: 'Joan',
+  Jane: 'Jane',
   Soren: 'Søren',
-  Marie: 'Marie',
-  Peter: 'Peter',
-  Anna: 'Anna',
-  Lars: 'Lars',
-  Emma: 'Emma',
-  Jonas: 'Jonas'
+  Esther: 'Esther'
 }
 
 export function toPrismaIdentity(name: string): UserIdentityName {

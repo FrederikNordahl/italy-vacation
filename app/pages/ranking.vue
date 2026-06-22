@@ -1,19 +1,23 @@
 <script setup lang="ts">
-import { ACTIVITY_CATEGORIES } from '../../shared/constants/vacation'
+import { ACTIVITY_CATEGORIES } from '#shared/constants/vacation'
+import { da, categoryLabel } from '#shared/i18n/da'
 
 definePageMeta({ layout: 'default' })
 
 const { activities, loading, fetchActivities } = useActivities()
 
-onMounted(() => fetchActivities())
+await useAsyncData('activities-list', () => fetchActivities())
 
 const sortedByVotes = computed(() =>
-  [...activities.value].sort((a, b) => b.voteScore - a.voteScore)
+  [...activities.value].sort((a, b) => b.upvotes - a.upvotes || a.downvotes - b.downvotes)
 )
 
 const mostPopular = computed(() => sortedByVotes.value.slice(0, 5))
 const leastPopular = computed(() =>
-  [...sortedByVotes.value].reverse().filter(a => a.voteScore < 0 || a._count.votes > 0).slice(0, 5)
+  [...activities.value]
+    .filter(a => a.downvotes > 0)
+    .sort((a, b) => b.downvotes - a.downvotes || a.upvotes - b.upvotes)
+    .slice(0, 5)
 )
 
 const byCategory = computed(() =>
@@ -21,7 +25,7 @@ const byCategory = computed(() =>
     category: cat,
     activities: [...activities.value]
       .filter(a => a.category === cat)
-      .sort((a, b) => b.voteScore - a.voteScore)
+      .sort((a, b) => b.upvotes - a.upvotes || a.downvotes - b.downvotes)
   })).filter(g => g.activities.length > 0)
 )
 
@@ -43,7 +47,7 @@ const longestDrive = computed(() =>
 <template>
   <div>
     <h1 class="text-2xl sm:text-3xl font-bold mb-6">
-      Rankings
+      {{ da.rankings }}
     </h1>
 
     <div v-if="loading" class="flex justify-center py-16">
@@ -54,7 +58,7 @@ const longestDrive = computed(() =>
       <section>
         <h2 class="text-lg font-semibold mb-3 flex items-center gap-2">
           <UIcon name="i-lucide-trophy" class="text-primary" />
-          Most Popular
+          {{ da.mostPopular }}
         </h2>
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
           <ActivityCard
@@ -67,7 +71,7 @@ const longestDrive = computed(() =>
 
       <section v-if="leastPopular.length">
         <h2 class="text-lg font-semibold mb-3">
-          Least Popular
+          {{ da.leastPopular }}
         </h2>
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
           <ActivityCard
@@ -80,7 +84,7 @@ const longestDrive = computed(() =>
 
       <section v-for="group in byCategory" :key="group.category">
         <h2 class="text-lg font-semibold mb-3">
-          {{ group.category }}
+          {{ categoryLabel(group.category) }}
         </h2>
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
           <ActivityCard
@@ -93,7 +97,7 @@ const longestDrive = computed(() =>
 
       <section>
         <h2 class="text-lg font-semibold mb-3">
-          Shortest Drives
+          {{ da.shortestDrives }}
         </h2>
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
           <ActivityCard
@@ -106,7 +110,7 @@ const longestDrive = computed(() =>
 
       <section>
         <h2 class="text-lg font-semibold mb-3">
-          Longest Drives
+          {{ da.longestDrives }}
         </h2>
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
           <ActivityCard

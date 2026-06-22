@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
     include: {
       images: { orderBy: { sortOrder: 'asc' } },
       votes: true,
-      _count: { select: { comments: true, votes: true } }
+      _count: { select: { votes: true } }
     },
     orderBy: [{ scheduledDate: 'asc' }, { sortOrder: 'asc' }]
   })

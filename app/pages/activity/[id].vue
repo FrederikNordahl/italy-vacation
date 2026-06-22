@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ActivityDto } from '../../shared/types/activity'
+import type { ActivityDto } from '#shared/types/activity'
 
 definePageMeta({ layout: 'modal' })
 

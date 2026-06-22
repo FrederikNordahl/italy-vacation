@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { ActivityDto } from '../../../shared/types/activity'
+import type { ActivityDto } from '#shared/types/activity'
+import { da } from '#shared/i18n/da'
 
 const props = defineProps<{
   activity?: ActivityDto | null
@@ -65,9 +66,9 @@ function closeModal() {
 
       <div v-else class="text-center py-12">
         <p class="text-muted mb-4">
-          Activity not found
+          {{ da.activityNotFound }}
         </p>
-        <UButton label="Back to board" to="/" />
+        <UButton :label="da.backToBoard" to="/" />
       </div>
     </template>
   </UModal>

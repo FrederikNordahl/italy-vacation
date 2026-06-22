@@ -1,14 +1,14 @@
 import { z } from 'zod'
 
 const activityCategoryEnum = z.enum([
-  'Culture', 'Food', 'Wine', 'Nature', 'History',
-  'Shopping', 'Adventure', 'Relaxation', 'Event'
+  'Wine', 'Food', 'Sightseeing', 'Nature', 'Swimming',
+  'Historic', 'Event', 'Relaxation', 'Other'
 ])
 
 const activityStatusEnum = z.enum(['Idea', 'Planned', 'Booked', 'Completed'])
 
 const identityEnum = z.enum([
-  'Frederik', 'Søren', 'Soren', 'Marie', 'Peter', 'Anna', 'Lars', 'Emma', 'Jonas'
+  'Anja', 'Per', 'Sarah', 'Frederik', 'Joan', 'Jane', 'Søren', 'Soren', 'Esther'
 ])
 
 export const createActivitySchema = z.object({
@@ -40,12 +40,6 @@ export const createVoteSchema = z.object({
   activityId: z.string(),
   userName: identityEnum,
   value: z.union([z.literal(1), z.literal(-1)])
-})
-
-export const createCommentSchema = z.object({
-  activityId: z.string(),
-  userName: identityEnum,
-  message: z.string().min(1).max(2000)
 })
 
 export const createLinkSchema = z.object({

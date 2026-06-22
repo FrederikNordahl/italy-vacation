@@ -1,80 +1,65 @@
 <script setup lang="ts">
-import { HOME_BASE, VACATION_START, VACATION_END } from '../../shared/constants/vacation'
+import { HOME_BASE, VACATION_START, VACATION_END } from '#shared/constants/vacation'
 import { format, parseISO } from 'date-fns'
+import { da as daLocale } from 'date-fns/locale'
+import { da } from '#shared/i18n/da'
 
-const navItems = [
-  { label: 'Board', to: '/', icon: 'i-lucide-layout-grid' },
-  { label: 'Ranking', to: '/ranking', icon: 'i-lucide-trophy' },
-  { label: 'Itinerary', to: '/itinerary', icon: 'i-lucide-list-checks' }
-]
+const { identity, showPicker } = useIdentity()
 
 const vacationLabel = computed(() => {
-  const start = format(parseISO(VACATION_START), 'MMM d')
-  const end = format(parseISO(VACATION_END), 'MMM d, yyyy')
+  const start = format(parseISO(VACATION_START), 'd. MMM', { locale: daLocale })
+  const end = format(parseISO(VACATION_END), 'd. MMM yyyy', { locale: daLocale })
   return `${start} – ${end}`
+})
+
+onMounted(() => {
+  if (!identity.value) {
+    showPicker.value = true
+  }
 })
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col">
-    <header class="sticky top-0 z-40 border-b border-default bg-default/80 backdrop-blur-lg">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
-        <div class="flex items-center gap-4 min-w-0">
-          <NuxtLink to="/" class="flex items-center gap-2 shrink-0">
-            <UIcon name="i-lucide-palmtree" class="size-6 text-primary" />
-            <div class="hidden sm:block">
-              <p class="font-bold text-sm leading-tight">
-                Tuscany 2026
-              </p>
-              <p class="text-xs text-muted">
-                {{ vacationLabel }}
-              </p>
-            </div>
-          </NuxtLink>
+  <div class="min-h-screen flex flex-col bg-olive-50/60 dark:bg-default">
+    <header class="sticky top-0 z-40 border-b border-default bg-default/95 backdrop-blur-lg shadow-sm">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between gap-4">
+        <NuxtLink to="/" class="flex items-center gap-3 min-w-0">
+          <div class="flex size-10 sm:size-11 items-center justify-center rounded-xl bg-primary/10 shrink-0">
+            <UIcon name="i-lucide-palmtree" class="size-5 sm:size-6 text-primary" />
+          </div>
+          <div class="min-w-0">
+            <p class="font-bold text-lg sm:text-xl leading-tight truncate">
+              {{ da.appTitle }}
+            </p>
+            <p class="text-sm text-muted truncate">
+              {{ vacationLabel }}
+            </p>
+          </div>
+        </NuxtLink>
 
-          <nav class="hidden md:flex items-center gap-1">
-            <UButton
-              v-for="item in navItems"
-              :key="item.to"
-              :to="item.to"
-              :label="item.label"
-              :icon="item.icon"
-              color="neutral"
-              variant="ghost"
-              size="sm"
-            />
-          </nav>
-        </div>
-
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 shrink-0">
           <IdentitySwitcher />
-          <UColorModeButton />
+          <UColorModeButton size="md" />
         </div>
       </div>
-
-      <nav class="md:hidden border-t border-default px-4 py-2 flex gap-1 overflow-x-auto">
-        <UButton
-          v-for="item in navItems"
-          :key="item.to"
-          :to="item.to"
-          :label="item.label"
-          :icon="item.icon"
-          color="neutral"
-          variant="ghost"
-          size="xs"
-        />
-      </nav>
     </header>
 
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
+    <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
       <slot />
     </main>
 
-    <footer class="border-t border-default py-4 px-4 text-center text-xs text-muted">
-      <p class="flex items-center justify-center gap-1">
-        <UIcon name="i-lucide-home" class="size-3" />
-        Home base: {{ HOME_BASE.name }} — {{ HOME_BASE.address }}
-      </p>
+    <footer class="border-t border-default bg-default/80 py-4 px-4 text-center text-sm">
+      <a
+        :href="HOME_BASE.mapsUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center justify-center gap-1.5 max-w-full text-muted hover:text-primary transition-colors"
+        :aria-label="`${da.openMaps}: ${HOME_BASE.name}`"
+      >
+        <UIcon name="i-lucide-map-pin" class="size-4 shrink-0" />
+        <span class="truncate">{{ HOME_BASE.name }}</span>
+        <UIcon name="i-lucide-external-link" class="size-3.5 shrink-0 opacity-60" />
+      </a>
     </footer>
 
     <IdentityPicker />

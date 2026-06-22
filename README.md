@@ -30,11 +30,11 @@ A collaborative vacation planning app for our Tuscany trip (Jun 27 – Jul 4, 20
 ### Setup
 
 ```bash
-cp .env.example .env
-# Edit .env with your DATABASE_URL and BLOB_READ_WRITE_TOKEN
+# Pull env from Vercel (or copy .env.example manually)
+vercel env pull .env.local
 
 npm install
-npx prisma migrate dev
+npx prisma migrate deploy
 npm run db:seed
 npm run dev
 ```
