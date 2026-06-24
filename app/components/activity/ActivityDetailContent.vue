@@ -46,7 +46,7 @@ async function onVoted() {
 async function handleImageUpload(event: Event) {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
-  if (!file || !isAdmin.value) return
+  if (!file) return
 
   if (file.size > 4.5 * 1024 * 1024) {
     alert(da.imageTooLarge)

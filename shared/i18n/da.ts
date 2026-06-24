@@ -1,8 +1,8 @@
 import type { ActivityCategory, ActivityStatus } from '#shared/constants/vacation'
 
 export const da = {
-  appTitle: 'Toscana-ferie 2026',
-  appDescription: 'Planlæg vores Toscana-ferie 27. juni – 4. juli 2026. Tavle, kalender, stemmer og rejseplan.',
+  appTitle: 'Anjas 50 års fejrings ferie',
+  appDescription: 'Planlæg Anjas 50 års fejringsferie i Toscana, 27. juni – 4. juli 2026. Stem på aktiviteter og læg dem på tavlen.',
   vacationDates: '27. juni – 4. juli 2026',
   homeBase: 'Hjemmebase',
 
@@ -14,8 +14,8 @@ export const da = {
   whoAreYouDesc: 'Vælg dit navn, så vi ved hvem der stemmer.',
   selectIdentity: 'Vælg person',
 
-  vacationPlanner: 'Ferieplanlægger',
-  vacationPlannerDesc: 'Træk aktiviteter på dagene. Klik for detaljer — og stem direkte på tavlen.',
+  vacationPlanner: 'Tavlen',
+  vacationPlannerDesc: 'Træk aktiviteter på dagene. Klik for detaljer — og stem direkte her.',
   board: 'Tavle',
   calendar: 'Kalender',
   searchPlaceholder: 'Søg aktiviteter...',
@@ -66,6 +66,12 @@ export const da = {
   downvotedBy: 'Stemte imod:',
 
   edit: 'Rediger',
+  addImages: 'Vælg billeder',
+  imagesSection: 'Billeder',
+  imagesDesc: 'Det første billede bruges på kortet i oversigten.',
+  noImagesYet: 'Ingen billeder endnu',
+  imageSizeHint: 'Max 4,5 MB per billede',
+  coverImage: 'Forside',
   uploadImage: 'Upload billede',
   delete: 'Slet',
   deleteConfirm: 'Slet denne aktivitet?',
@@ -89,9 +95,17 @@ export const da = {
 
   editActivity: 'Rediger aktivitet',
   newActivityTitle: 'Ny aktivitet',
+  newActivityDesc: 'Giv den et navn, vælg type — og læg den på en dag hvis du allerede ved hvornår.',
+  editActivityDesc: 'Opdater detaljer for aktiviteten.',
+  titlePlaceholder: 'fx. Vinsmagning på Brolio',
   titleLabel: 'Titel',
-  scheduledDate: 'Planlagt dato',
-  descriptionMarkdown: 'Beskrivelse (Markdown)',
+  scheduledDate: 'Hvilken dag?',
+  pickCategory: 'Hvad er det?',
+  travelSection: 'Kørsel & tid (valgfrit)',
+  detailsSection: 'Beskrivelse (valgfrit)',
+  descriptionLabel: 'Beskrivelse',
+  notesPlaceholder: 'Praktiske noter, bookinginfo, osv.',
+  descriptionPlaceholder: 'Hvad kan man opleve? Hvorfor er det fedt?',
   driveMin: 'Kørsel (min)',
   distanceKm: 'Afstand (km)',
   durationH: 'Varighed (t)',

@@ -25,7 +25,7 @@ onMounted(() => {
       <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between gap-4">
         <NuxtLink to="/" class="flex items-center gap-3 min-w-0">
           <div class="flex size-10 sm:size-11 items-center justify-center rounded-xl bg-primary/10 shrink-0">
-            <UIcon name="i-lucide-palmtree" class="size-5 sm:size-6 text-primary" />
+            <UIcon name="i-lucide-party-popper" class="size-5 sm:size-6 text-primary" />
           </div>
           <div class="min-w-0">
             <p class="font-bold text-lg sm:text-xl leading-tight truncate">

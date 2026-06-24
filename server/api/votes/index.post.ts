@@ -12,6 +12,21 @@ export default defineEventHandler(async (event) => {
   const { activityId, userName, value } = parsed.data
   const prismaName = toPrismaIdentity(userName)
 
+  const existing = await prisma.vote.findUnique({
+    where: {
+      activityId_userName: { activityId, userName: prismaName }
+    }
+  })
+
+  if (existing?.value === value) {
+    await prisma.vote.delete({
+      where: {
+        activityId_userName: { activityId, userName: prismaName }
+      }
+    })
+    return { deleted: true, activityId, userName: prismaName }
+  }
+
   const vote = await prisma.vote.upsert({
     where: {
       activityId_userName: { activityId, userName: prismaName }
